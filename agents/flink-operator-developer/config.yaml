@@ -1,0 +1,27 @@
+# flink-operator-developer Agent 配置
+agent:
+  name: flink-operator-developer
+  version: 0.1.0
+  description: 基于 Flink 1.17 官方 Data Sources 文档的 Source/算子开发助手
+
+llm:
+  # 任何 OpenAI 兼容端点均可。示例：
+  #   OpenAI:  https://api.openai.com/v1        (api_key_env: OPENAI_API_KEY)
+  #   智谱GLM: https://open.bigmodel.cn/api/paas/v4  (api_key_env: ZHIPUAI_API_KEY)
+  #   DeepSeek: https://api.deepseek.com        (api_key_env: DEEPSEEK_API_KEY)
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.2
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  knowledge_search: true   # 检索 knowledge/ 知识库
+  source_codegen: true     # 生成自定义 Source 骨架 / 内置 Source 用法
+  code_validator: true     # 静态审查（水位线误用、遗留 API 等）
+
+runtime:
+  flink_version: "1.17"
+  default_language: java

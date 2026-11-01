@@ -1,0 +1,30 @@
+# clickhouse-sql-optimizer Agent 配置
+agent:
+  name: clickhouse-sql-optimizer
+  version: 0.2.0
+  description: 基于 ClickHouse 开发规范的 SQL 审查、慢查询定位、建表方案生成与表设计优化助手
+
+llm:
+  # 任何 OpenAI 兼容端点均可。示例：
+  #   OpenAI:  https://api.openai.com/v1        (api_key_env: OPENAI_API_KEY)
+  #   智谱GLM: https://open.bigmodel.cn/api/paas/v4  (api_key_env: ZHIPUAI_API_KEY)
+  #   DeepSeek: https://api.deepseek.com        (api_key_env: DEEPSEEK_API_KEY)
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.2
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  knowledge_search: true   # 检索 knowledge/ 知识库（规范提炼 + 慢SQL六步 SOP）
+  review_sql: true         # SQL 静态审查（14 条规则）
+  advise_ddl: true         # 建表 DDL 评估（引擎/排序键/分区/类型/索引）
+  ddl_codegen: true        # 建表方案生成（4 场景合规模板）
+  parse_explain: true      # 解析 EXPLAIN 输出（part/granule 裁剪、键条件）
+  build_diagnostics: true  # 慢SQL定位六步 SOP + system.* 诊断 SQL（无需真实连接）
+
+runtime:
+  clickhouse_version: "24.x"
+  spec_file: clickhouse开发规范.md

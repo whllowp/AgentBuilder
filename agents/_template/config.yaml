@@ -1,0 +1,20 @@
+# Agent 配置模板：复制后按需修改
+agent:
+  name: template-agent
+  version: 0.1.0
+  description: 一句话描述 Agent 职责
+
+llm:
+  provider: openai          # openai / anthropic / zhipu / ...
+  model: gpt-4o
+  temperature: 0.2
+  max_tokens: 4096
+
+tools:
+  # 每个工具一行：名称: 是否启用
+  explain_parser: true
+  metadata_query: false
+
+runtime:
+  # 数据库连接、沙箱、超时等环境相关配置
+  timeout_seconds: 120
