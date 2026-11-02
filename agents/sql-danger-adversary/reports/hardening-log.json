@@ -1,0 +1,12 @@
+[
+  {"round": 1, "iter": 1, "note": "基线引擎：DGR-101~502 规则骨架 + 字符串掩码/语句切分。全量基线检出率 82%、误报率 36%"},
+  {"round": 2, "iter": 2, "note": "修复守卫识别：_GUARD_EQ_ANY_RE 符号运算符后误加 \\b 导致 'id = 5' 判为无守卫（T1/T4/T5/T7/T10 良性误报根因）"},
+  {"round": 3, "iter": 2, "note": "注释双规范化：注释→空串 与 注释→空格 两变体并集匹配，免疫 DR/**/OP 断词拼回（T3 注入攻击根因）"},
+  {"round": 4, "iter": 2, "note": "WHERE 守卫分析改在字面量完整文本上执行：LIKE '%' 恒真、'A3' 值守卫可识别（T5-05 恒真伪装根因）"},
+  {"round": 5, "iter": 2, "note": "恒真判定覆盖 1=1/true/IS NOT NULL/自引用 IN/LIKE '%' 及 OR/AND 组合逻辑（T5 级全部命中）"},
+  {"round": 6, "iter": 2, "note": "CTE 包裹（WITH ... DELETE/UPDATE）由语句级规则天然覆盖，无需专门规则；加用例固化"},
+  {"round": 7, "iter": 2, "note": "事务装饰：BEGIN/COMMIT 不降低破坏级别，仅抑制 DGR-302；danger 预期不变（T7 通过）"},
+  {"round": 8, "iter": 2, "note": "三明治掩埋：语句级逐条扫描天然覆盖，17 条良语句中埋 1 条 TRUNCATE 仍检出（T8 通过）"},
+  {"round": 9, "iter": 2, "note": "动态拼装：修复 _looks_danger_literal 的 UPDATE 点号表名（dws.orders）；EXECUTE IMMEDIATE/PREPARE/f-string/拼接全命中（T9-05 根因）"},
+  {"round": 10, "iter": 2, "note": "误报对抗：EXPLAIN 降级、tmp 豁免、键等值守卫放行、字面量/注释仅提示；并纠正对抗预期——safe 标记只降级不解除非豁免 DROP（标记不可单独授权，DGR-105 仍阻断）。终态 100%/0%"}
+]

@@ -13,6 +13,9 @@
 | `agents/postgres-sql-optimizer` | PostgreSQL SQL 优化 Agent | 分析 EXPLAIN 输出、索引建议、SQL 改写、统计信息诊断（磁盘损坏，待恢复） |
 | `agents/clickhouse-sql-optimizer` | ClickHouse SQL 优化 Agent | **已实现 v0.2**：SQL 审查（14 条规则）、建表方案生成（4 场景）与 DDL 评估（13 类检查）、慢 SQL 定位六步 SOP + 诊断 SQL、EXPLAIN 量化解读。知识底座《clickhouse开发规范.md》v1.1；另附 ZCode 技能 `.agents/skills/clickhouse-sql-optimizer/` |
 | `agents/flink-operator-developer` | Flink 算子开发 Agent | 生成/审查 DataStream、Table API 算子与 UDF（磁盘损坏，部分恢复） |
+| `agents/code-reviewer` | 代码评审 Agent | **已实现 v0.1**：参考阿里 open-code-review——确定性管线（文件筛选/实现-测试智能打包/glob 规则匹配/行级定位）+ LLM 深度评审；结构化评论（8 类 category、4 级 severity、suggestion_code），low 丢弃备查，CLI text/json、critical 时 exit 1 可接 CI |
+| `agents/sql-danger-reviewer` | 高危操作代码检验 Agent | **已实现 v0.1**：拦截全表 UPDATE/DELETE、删库删表、TRUNCATE、ALTER 破坏子句、mutation、动态拼装、rm -rf（DGR-1xx~5xx 分级 + 豁免 + 放行四件套），对抗混淆免疫（10 轮红队验证 100%/0%），CI 可用退出码 |
+| `agents/sql-danger-adversary` | 代码评审对抗 Agent（防御性红队） | **已实现 v0.1**：10 级递进攻击语料（混淆/断词/恒真/CTE/事务/三明治/动态/误报对抗）+ 10 轮迭代 harness，检测引擎从基线 82%/36% 加固至 100%/0%，报告见其 `reports/` |
 | `agents/_template` | 新 Agent 模板 | 复制此目录快速搭建新 Agent |
 
 ## 目录结构
@@ -23,8 +26,11 @@ Agent-builder/
 │   ├── _template/           # 新 Agent 脚手架模板
 │   ├── postgres-sql-optimizer/
 │   ├── clickhouse-sql-optimizer/
+│   ├── code-reviewer/
+│   ├── sql-danger-reviewer/
+│   ├── sql-danger-adversary/
 │   └── flink-operator-developer/
-├── .agents/skills/          # ZCode 技能（clickhouse-sql-optimizer）
+├── .agents/skills/          # ZCode 技能（clickhouse-sql-optimizer / code-reviewer / sql-danger-reviewer / sql-danger-adversary）
 ├── common/                  # 跨 Agent 公共层（Python 包）
 │   ├── agentcore/           # Agent 基类、执行循环、工具协议（ToolRegistry）
 │   ├── llm/                 # OpenAI 兼容 LLM 客户端（requests/urllib 双实现）+ Mock

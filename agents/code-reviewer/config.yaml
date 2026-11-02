@@ -1,0 +1,24 @@
+# code-reviewer Agent 配置（参考 alibaba/open-code-review 设计）
+agent:
+  name: code-reviewer
+  version: 0.1.0
+  description: AI 代码评审 Agent——确定性管线（文件筛选/智能打包/规则匹配/行级定位）+ LLM 深度评审
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.2
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  inspect_diff: true     # diff 解析 + 文件筛选 + 打包 + 规则来源
+  static_scan: true      # 确定性检查（行级结构化评论）
+  match_rules: true      # glob 规则匹配（rule.json 覆盖/合并）
+  knowledge_search: true # 管线与评论结构知识
+
+runtime:
+  keep_low: false        # 报告默认丢弃疑似误报的 low（open-code-review 惯例）
+  comment_language: zh

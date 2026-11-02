@@ -1,0 +1,23 @@
+# sql-danger-adversary Agent 配置（防御性红队：仅测试自有检测引擎）
+agent:
+  name: sql-danger-adversary
+  version: 0.1.0
+  description: 代码评审对抗 Agent——生成混淆/伪装攻击语料，测试并加固 sql-danger-reviewer 检测引擎
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.3
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  generate_attacks: true   # 10 级递进攻击语料
+  evaluate_attacks: true   # 逐条评估被测引擎
+  run_iteration: true      # 1-10 轮迭代统计
+
+runtime:
+  target_agent: sql-danger-reviewer   # 被测对象（评测专用耦合，见 tools/__init__.py 说明）
+  rounds: 10

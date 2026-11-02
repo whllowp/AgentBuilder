@@ -1,0 +1,36 @@
+diff --git a/src/main/java/com/x/PayService.java b/src/main/java/com/x/PayService.java
+--- a/src/main/java/com/x/PayService.java
++++ b/src/main/java/com/x/PayService.java
+@@ -12,3 +12,8 @@ public class PayService {
+     public void pay(Long id) {}
++    public void audit() {
++        ExecutorService pool = Executors.newFixedThreadPool(4);
++        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
++        pool.submit(() -> fmt.format(new Date()));
++    }
+diff --git a/src/main/java/com/x/config/AppConfig.java b/src/main/java/com/x/config/AppConfig.java
+new file mode 100644
+--- /dev/null
++++ b/src/main/java/com/x/config/AppConfig.java
+@@ -0,0 +1,2 @@
++public class AppConfig {
++    static final String DB_PASSWORD = "prod-Passw0rd-2026";
+diff --git a/src/test/java/com/x/PayServiceTest.java b/src/test/java/com/x/PayServiceTest.java
+new file mode 100644
+--- /dev/null
++++ b/src/test/java/com/x/PayServiceTest.java
+@@ -0,0 +1,1 @@
++class PayServiceTest { /* TODO add tests */ }
+diff --git a/frontend/app/pay.js b/frontend/app/pay.js
+--- a/frontend/app/pay.js
++++ b/frontend/app/pay.js
+@@ -3,2 +3,5 @@ function calc(a, b) {
+   return a + b;
++function debugPay() {
++  debugger;
++  console.log("debugPay called");
+diff --git a/yarn.lock b/yarn.lock
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -1,1 +1,1 @@
++#lock

@@ -1,0 +1,22 @@
+# sql-danger-reviewer Agent 配置
+agent:
+  name: sql-danger-reviewer
+  version: 0.1.0
+  description: 高危操作代码检验 Agent（全表更新/删库删表等破坏性变更拦截）
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.1
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  danger_scan: true         # DGR-1xx~5xx 检测引擎（对抗混淆免疫）
+  knowledge_search: true    # 检索 knowledge/（规则目录 + 对抗手法）
+  approval_checklist: true  # 放行四件套（审批/备份/回滚/窗口）
+
+runtime:
+  spec_file: 高危操作代码检验规范.md

@@ -1,0 +1,117 @@
+{
+ "ok": true,
+ "stats": {
+  "total": 5,
+  "reviewed": 4,
+  "filtered": 1,
+  "added": 11,
+  "removed": 0
+ },
+ "filtered_files": [
+  "yarn.lock"
+ ],
+ "bundles": [
+  {
+   "id": "bundle-1",
+   "files": [
+    "src/main/java/com/x/PayService.java",
+    "src/test/java/com/x/PayServiceTest.java"
+   ],
+   "added_lines": 6
+  },
+  {
+   "id": "bundle-2",
+   "files": [
+    "frontend/app/pay.js"
+   ],
+   "added_lines": 3
+  },
+  {
+   "id": "bundle-3",
+   "files": [
+    "src/main/java/com/x/config/AppConfig.java"
+   ],
+   "added_lines": 2
+  }
+ ],
+ "rules": {
+  "src/main/java/com/x/PayService.java": [
+   "通用：新增代码中不得引入硬编码凭据（password/secret/token/api_key）；不得引入冲突标记；调试语句（debugger/console.log/print 调试）不得合入；新增 TODO/FIXME 需带负责人与工单。",
+   "Java（参考《阿里巴巴 Java 开发手册》要点）：线程池必须手动 new ThreadPoolExecutor 并明确参数，禁用 Executors 快捷方法；SimpleDateFormat 等非线程安全对象不得声明为 static 共享；不得捕获 Exception 后吞掉（空 catch 或仅 e.printStackTrace）；命名遵循驼峰与常量全大写下划线；集合/POJO 序列化与 equals/hashCode 成对实现。"
+  ],
+  "src/main/java/com/x/config/AppConfig.java": [
+   "通用：新增代码中不得引入硬编码凭据（password/secret/token/api_key）；不得引入冲突标记；调试语句（debugger/console.log/print 调试）不得合入；新增 TODO/FIXME 需带负责人与工单。",
+   "Java（参考《阿里巴巴 Java 开发手册》要点）：线程池必须手动 new ThreadPoolExecutor 并明确参数，禁用 Executors 快捷方法；SimpleDateFormat 等非线程安全对象不得声明为 static 共享；不得捕获 Exception 后吞掉（空 catch 或仅 e.printStackTrace）；命名遵循驼峰与常量全大写下划线；集合/POJO 序列化与 equals/hashCode 成对实现。"
+  ],
+  "src/test/java/com/x/PayServiceTest.java": [
+   "通用：新增代码中不得引入硬编码凭据（password/secret/token/api_key）；不得引入冲突标记；调试语句（debugger/console.log/print 调试）不得合入；新增 TODO/FIXME 需带负责人与工单。",
+   "Java（参考《阿里巴巴 Java 开发手册》要点）：线程池必须手动 new ThreadPoolExecutor 并明确参数，禁用 Executors 快捷方法；SimpleDateFormat 等非线程安全对象不得声明为 static 共享；不得捕获 Exception 后吞掉（空 catch 或仅 e.printStackTrace）；命名遵循驼峰与常量全大写下划线；集合/POJO 序列化与 equals/hashCode 成对实现。",
+   "测试：新增/修改的业务逻辑需伴随测试；测试需覆盖异常分支；断言要具体（避免仅断言不抛错）。",
+   "测试：新增/修改的业务逻辑需伴随测试；测试需覆盖异常分支；断言要具体（避免仅断言不抛错）。"
+  ],
+  "frontend/app/pay.js": [
+   "通用：新增代码中不得引入硬编码凭据（password/secret/token/api_key）；不得引入冲突标记；调试语句（debugger/console.log/print 调试）不得合入；新增 TODO/FIXME 需带负责人与工单。",
+   "JavaScript/TypeScript：禁用 debugger；console.log 调试语句不得合入；比较使用 === / !==；禁用 var；异步必须处理 rejection（catch 或 try/await）；TS 禁用 any 扩散（新代码优先具体类型）。"
+  ]
+ },
+ "comments": [
+  {
+   "path": "src/main/java/com/x/config/AppConfig.java",
+   "content": "疑似硬编码凭据：新增行包含 password/secret/token/api_key 等敏感赋值，凭据必须走密钥管理，禁止入库",
+   "start_line": 2,
+   "end_line": 2,
+   "category": "security",
+   "severity": "critical",
+   "existing_code": "    static final String DB_PASSWORD = \"prod-Passw0rd-2026\";",
+   "suggestion_code": "<从环境变量/密钥服务读取，并轮换已泄露凭据>",
+   "thinking": "secret-pattern"
+  },
+  {
+   "path": "frontend/app/pay.js",
+   "content": "调试语句 debugger 不得合入",
+   "start_line": 5,
+   "end_line": 5,
+   "category": "bug",
+   "severity": "high",
+   "existing_code": "  debugger;",
+   "suggestion_code": "删除该行",
+   "thinking": "debugger"
+  },
+  {
+   "path": "src/main/java/com/x/PayService.java",
+   "content": "使用 Executors 创建线程池（阿里手册禁止）：队列无界可致 OOM，应手动 new ThreadPoolExecutor 并明确参数",
+   "start_line": 14,
+   "end_line": 14,
+   "category": "performance",
+   "severity": "medium",
+   "existing_code": "        ExecutorService pool = Executors.newFixedThreadPool(4);",
+   "suggestion_code": "new ThreadPoolExecutor(core, max, keepAlive, unit, new LinkedBlockingQueue<>(cap), threadFactory, new ThreadPoolExecutor.CallerRunsPolicy())",
+   "thinking": "p3c-thread-pool"
+  }
+ ],
+ "dropped_low": [
+  {
+   "path": "frontend/app/pay.js",
+   "content": "console.log/debug 调试输出不应合入生产代码",
+   "start_line": 6,
+   "end_line": 6,
+   "category": "style",
+   "severity": "low",
+   "existing_code": "  console.log(\"debugPay called\");",
+   "suggestion_code": "删除或替换为正式日志（含级别与上下文）",
+   "thinking": "console-log"
+  },
+  {
+   "path": "src/test/java/com/x/PayServiceTest.java",
+   "content": "新增 TODO/FIXME 需带负责人与工单（如 TODO(owner): xxx #工单号）",
+   "start_line": 1,
+   "end_line": 1,
+   "category": "maintainability",
+   "severity": "low",
+   "existing_code": "class PayServiceTest { /* TODO add tests */ }",
+   "suggestion_code": "TODO(owner): 描述 #工单号",
+   "thinking": "todo-owner"
+  }
+ ],
+ "summary": "文件 5（评审 4 / 过滤 1），打包 3 个评审单元，确定性发现 3 条（另忽略疑似误报 low 2 条）"
+}
