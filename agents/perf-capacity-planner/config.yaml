@@ -1,0 +1,21 @@
+# perf-capacity-planner Agent 配置
+agent:
+  name: perf-capacity-planner
+  version: 0.1.0
+  description: 性能容量规划 Agent——CK/Kafka/Flink/通用容量模型计算（公式+假设+水位阈值+敏感性）
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.2
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  capacity_plan: true
+  knowledge_search: true
+
+runtime:
+  watermark_rule: "50% 预警 / 70% 扩容"

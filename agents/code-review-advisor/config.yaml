@@ -1,0 +1,22 @@
+# code-review-advisor Agent 配置
+agent:
+  name: code-review-advisor
+  version: 0.1.0
+  description: 把评审发现润色成"合适的代码意见"，并对草稿做语气检查（对事不对人/可执行/有依据）
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.3
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  polish_comments: true
+  tone_check: true
+  knowledge_search: true
+
+runtime:
+  comment_language: zh

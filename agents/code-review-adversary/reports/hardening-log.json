@@ -1,0 +1,12 @@
+[
+  {"round": 1, "iter": 1, "note": "基线：可机检项（凭据/debugger/冲突标记/裸 except/P3C 反模式）明文检出与良性放行"},
+  {"round": 2, "iter": 2, "note": "回补 yaml 未加引号密钥（SECRET_UNQUOTED_RE：值≥8 位且含字母+数字）；测试路径假凭据降为 low（默认丢弃）防误报"},
+  {"round": 3, "iter": 1, "note": "调试语句变体（debugger ;）由 \\b 词边界天然覆盖；测试路径 console/print 豁免已在基线"},
+  {"round": 4, "iter": 2, "note": "回补多行链式 Executors（拼接新增行源码检测，行号归到含 Executors 的行）；printStackTrace 带空格变体天然覆盖；非 static SimpleDateFormat 保持不报（局部变量无并发问题）"},
+  {"round": 5, "iter": 1, "note": "大 diff 掩埋（30+ 良性行藏凭据/debugger）：逐行扫描天然覆盖"},
+  {"round": 6, "iter": 1, "note": "路径对抗：锁文件被过滤器跳过属预期（统计透明）；src 正常路径密钥检出"},
+  {"round": 7, "iter": 1, "note": "误报攻击（== 布尔比较/带负责人 TODO/干净 TS）：low 级按报告策略丢弃，verdict=pass"},
+  {"round": 8, "iter": 1, "note": "多文件混合：逐文件扫描天然覆盖"},
+  {"round": 9, "iter": 1, "note": "语义 bug（差一/浮点相等/资源泄漏/朴素时区/无界重试）：确定性引擎按设计不负责，导出 llm-benchmark.md 供 LLM 模式加压（诚实度量，不冒充通过）"},
+  {"round": 10, "iter": 1, "note": "高级语义基准（check-then-act/SQL 注入拼接/静默部分写/缓存击穿）：同上导出基准集"}
+]

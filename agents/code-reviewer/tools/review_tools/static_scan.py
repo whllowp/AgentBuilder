@@ -19,6 +19,11 @@ _SECRET_RE = re.compile(
     r"[\w-]*(password|passwd|secret|api[_-]?key|apikey|access[_-]?key|token|private[_-]?key)[\w-]*\s*[:=]\s*['\"][^'\"\s]{8,}",
     re.IGNORECASE,
 )
+# 未加引号的赋值（yaml 风格）：值 ≥8 位且同时含字母与数字，降低数值型误报
+_SECRET_UNQUOTED_RE = re.compile(
+    r"[\w-]*(password|passwd|secret|api[_-]?key|apikey|access[_-]?key|private[_-]?key)[\w-]*\s*[:=]\s*(?=[A-Za-z0-9_-]{8,})(?=[A-Za-z0-9_-]*[0-9])(?=[A-Za-z0-9_-]*[A-Za-z])[A-Za-z0-9_-]+",
+    re.IGNORECASE,
+)
 _CONFLICT_RE = re.compile(r"^(<<<<<<<|=======$|>>>>>>>)")
 _DEBUGGER_RE = re.compile(r"\bdebugger\b\s*;?")
 _CONSOLE_RE = re.compile(r"\bconsole\.(log|debug)\s*\(")
@@ -70,9 +75,11 @@ def scan_file(file_entry: dict) -> list[dict]:
         text, ln = l["text"], l["line"]
         nxt = adds[i + 1]["text"] if i + 1 < len(adds) else ""
 
-        if _SECRET_RE.search(text):
+        if _SECRET_RE.search(text) or _SECRET_UNQUOTED_RE.search(text):
+            # 测试路径中的假凭据降为 low（默认丢弃备查）；生产路径 critical
+            is_test_path = "test" in path.lower() or "__tests__" in path
             comments.append(_comment(
-                path, ln, "security", "critical",
+                path, ln, "security", "low" if is_test_path else "critical",
                 "疑似硬编码凭据：新增行包含 password/secret/token/api_key 等敏感赋值，凭据必须走密钥管理，禁止入库",
                 existing=text, suggestion="<从环境变量/密钥服务读取，并轮换已泄露凭据>",
                 thinking="secret-pattern",
@@ -161,6 +168,19 @@ def scan_file(file_entry: dict) -> list[dict]:
                 path, ln, "maintainability", "low", "新增 TODO/FIXME 需带负责人与工单（如 TODO(owner): xxx #工单号）", existing=text,
                 suggestion="TODO(owner): 描述 #工单号", thinking="todo-owner",
             ))
+
+    # 跨行模式：链式调用拆行（pool = Executors\n .newXxx()）在拼接源码上检测，行号归到含 Executors 的行
+    joined = "\n".join(l["text"] for l in adds)
+    if not any(c["thinking"] == "p3c-thread-pool" for c in comments) and re.search(r"Executors\s*\.\s*new\w*ThreadPool", joined):
+        for l in adds:
+            if "Executors" in l["text"]:
+                comments.append(_comment(
+                    path, l["line"], "performance", "medium",
+                    "使用 Executors 创建线程池（阿里手册禁止）：队列无界可致 OOM，应手动 new ThreadPoolExecutor 并明确参数",
+                    existing=l["text"], suggestion="new ThreadPoolExecutor(core, max, keepAlive, unit, new LinkedBlockingQueue<>(cap), threadFactory, new ThreadPoolExecutor.CallerRunsPolicy())",
+                    thinking="p3c-thread-pool",
+                ))
+                break
 
     # 去重（同一行同一 thinking 只报一次）
     seen, uniq = set(), []

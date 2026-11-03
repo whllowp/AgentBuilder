@@ -1,0 +1,23 @@
+# code-review-adversary Agent 配置（防御性红队：仅测试自有 code-reviewer 引擎）
+agent:
+  name: code-review-adversary
+  version: 0.1.0
+  description: commit 对抗红队——生成规避/伪装 commit 测试 code-reviewer 确定性引擎，并导出 LLM 语义基准
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.3
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  generate_attacks: true
+  evaluate_attacks: true
+  run_iteration: true
+
+runtime:
+  target_agent: code-reviewer
+  rounds: 10

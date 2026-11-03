@@ -1,0 +1,22 @@
+# bigdata-developer Agent 配置
+agent:
+  name: bigdata-developer
+  version: 0.1.0
+  description: 大数据开发 Agent——Hive/拉链表/Flink SQL/Airflow/DolphinScheduler 代码生成与 ETL 规范审查
+
+llm:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o
+  api_key_env: OPENAI_API_KEY
+  temperature: 0.2
+  request_timeout: 120
+  max_retries: 2
+  max_iterations: 8
+
+tools:
+  etl_codegen: true
+  etl_review: true
+  knowledge_search: true
+
+runtime:
+  default_engine: hive
